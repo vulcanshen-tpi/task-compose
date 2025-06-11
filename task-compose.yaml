@@ -1,0 +1,55 @@
+tasks:
+  - name: elasticsearch
+    base_dir: ../../test-apps/elk/elasticsearch
+    executable: bin/elasticsearch
+    args:
+      - -E
+      - xpack.security.enabled=false
+      - -E
+      - xpack.security.http.ssl.enabled=false
+      - -E
+      - xpack.security.transport.ssl.enabled=false
+      - -E
+      - xpack.monitoring.collection.enabled=true
+    healthcheck:
+      frequency:
+        interval: 5s
+        timeout: 10s
+        retries: 5
+        delay: 5s
+      http:
+        url: http://localhost:9200
+  - name: kibana
+    base_dir: ../../test-apps/elk
+    executable: kibana/bin/kibana
+    args:
+      - -c
+      - kibana.yml
+    healthcheck:
+      frequency:
+        interval: 5s
+        timeout: 10s
+        retries: 5
+        delay: 5s
+      http:
+        url: http://localhost:5601/api/status
+        expect:
+          json:
+            value: available
+            jsonpath: "$.status.overall.level"
+    depends_on:
+      - elasticsearch
+  - name: curl1
+    executable: curl
+    args:
+      - -v
+      - http://localhost:9200
+    depends_on:
+      - elasticsearch
+  - name: curl2
+    executable: curl
+    args:
+      - -v
+      - http://localhost:5601/api/status
+    depends_on:
+      - kibana
