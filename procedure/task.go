@@ -257,10 +257,10 @@ func (t *Task) doHealthCheck() bool {
 		if len(t.Healthcheck.Command.Scripts) > 0 {
 			var cmd = t.Healthcheck.Command.Scripts[0]
 			var args = t.Healthcheck.Command.Scripts[1:]
-			var process = exec.Command(cmd, args...)
 			ctx, cancel := context.WithTimeout(context.Background(), timeout)
+			var process = exec.CommandContext(ctx, cmd, args...)
 			defer cancel()
-			process.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+
 			if err := process.Start(); err != nil {
 				return false
 			}
