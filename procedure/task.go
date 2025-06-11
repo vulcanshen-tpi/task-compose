@@ -16,7 +16,6 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 
 	"github.com/oliveagle/jsonpath"
@@ -270,12 +269,6 @@ func (t *Task) doHealthCheck() bool {
 			}()
 			select {
 			case <-ctx.Done():
-				if process.Process != nil {
-					err := syscall.Kill(-process.Process.Pid, syscall.SIGKILL)
-					if err != nil {
-						return false
-					}
-				}
 				return false
 			case err := <-done:
 				if err != nil {
