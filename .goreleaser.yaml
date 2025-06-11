@@ -36,51 +36,44 @@ builds:
       - -X 'app.BuildDate={{.Date}}'
       - -X 'app.ExecutionMode=CLI'
       - -X 'main.builtBy=goreleaser' # 記錄是 goreleaser 建置的
+    mod_timestamp: "{{ .CommitTimestamp }}"
 
 archives:
   - id: "task-compose-archives"
     builds:
       - "task-compose-build" # 關聯到上面定義的 build id
-    formats: [tar.gz]
-    # this name template makes the OS and Arch compatible with the results of `uname`.
-    name_template: >-
-      {{ .ProjectName }}_
-      {{- title .Os }}_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else if eq .Arch "386" }}i386
-      {{- else }}{{ .Arch }}{{ end }}
-      {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
+    format: tar.gz # 壓縮格式，通常是 tar.gz
+    # 壓縮包的命名模板，會根據 OS, Arch 自動生成
+    # 這個模板比你提供的官方範例更簡潔，但功能相同，通常更推薦用於非複雜情況
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    # 如果 Windows 需要 .zip 格式
     format_overrides:
       - goos: windows
-        formats: [zip]
+        format: zip
+    # 額外包含在壓縮包內的文件，例如 README、LICENSE
     files:
       - README.md
       - LICENSE
+    # 設置壓縮包內文件的權限和時間戳 (可選，但可保持一致性)
+    builds_info:
+      group: root
+      owner: root
+      mtime: "{{ .CommitDate }}"
 
-checksums:
+checksum: # 注意：舊版是 checksums，新版是 checksum (單數)
   name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
   algorithm: sha256 # 建議使用 SHA256
 
 release:
   github:
-    owner: vulcanshen-tpi # 你的 GitHub 用戶名或組織名
+    owner: vulcanshen-tpi # **你的 GitHub 用戶名或組織名**
     name: task-compose # 你的 GitHub 儲存庫名稱
   name_template: "Release {{ .Tag }}" # Release 的標題
   # 自動生成 Changelog (根據 Git Commit 歷史)
-  changelog:
-    sort: asc # 排序方式 (升序)
-    filters: # 篩選掉不希望出現在 Changelog 的 Commit 訊息
-      exclude:
-        - '^docs:'
-        - '^test:'
-        - '^chore:'
-        - '^refactor:'
-        - '^ci:'
 
-brews:
+homebrew_casks:
   - name: task-compose # 在 Homebrew 中安裝時的命令名稱 (brew install task-compose)
-    tap:
+    repository:
       owner: vulcanshen-tpi # 你的 Homebrew Tap 儲存庫的擁有者 (通常與你 GitHub 帳號相同)
       name: homebrew-tap # 你的 Homebrew Tap 儲存庫名稱，例如 vulcanshen/homebrew-tap
       # 如果你的 Tap 是私有的，或需要額外權限，可能需要 token (通常 GitHub Actions 會自動處理)
@@ -92,9 +85,7 @@ brews:
 
 dockers:
   - id: "task-compose-docker"
-    builds:
-      - "task-compose-build" # 關聯到上面定義的 build id，告訴 goreleaser 用哪個可執行檔構建 Docker 影像
-    # 你的 Docker Hub 帳號/組織名稱
+    use: buildx
     image_templates:
       - "vulcantpisoft/task-compose:{{ .Version }}" # 帶版本號的標籤
       - "vulcantpisoft/task-compose:latest"      # latest 標籤
@@ -102,18 +93,37 @@ dockers:
       - "vulcantpisoft/task-compose:{{ .Version }}-{{ .Arch }}"
     dockerfile: Dockerfile # 指定你的 Dockerfile 路徑 (通常在專案根目錄)
     build_flag_templates: # Docker build 命令的額外旗標
+      - "--pull" # 總是拉取最新的基礎影像
       - "--platform=linux/{{ .Arch }}" # 為了支持多架構，必須指定平台
-      - "--label=org.opencontainers.image.source=https://github.com/vulcanshen-tpi/task-compose" # OCI 兼容標籤
-    # 額外要複製到 Docker Context 的文件 (如果你的 Dockerfile 需要)
+      # OCI 兼容標籤 (可選，但推薦用於容器最佳實踐)
+      - "--label=org.opencontainers.image.description=A command orchestration tool for task-compose."
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
     extra_files:
       - README.md
       - LICENSE
-      # - some_other_config.yaml
 
-snapshots:
-  name_template: "{{ .ProjectName }}_snapshot"
+docker_manifests:
+  - name_template: "vulcantpisoft/task-compose:{{ .Version }}"
+    image_templates:
+      - "vulcantpisoft/task-compose:{{ .Version }}-amd64"
+      - "vulcantpisoft/task-compose:{{ .Version }}-arm64"
+  - name_template: "vulcantpisoft/task-compose:latest"
+    image_templates:
+      - "vulcantpisoft/task-compose:{{ .Version }}-amd64"
+      - "vulcantpisoft/task-compose:{{ .Version }}-arm64"
 
+# 快照發布配置 (用於本地測試，不會實際發布到 GitHub/Docker Hub)
+snapshot:
+  version_template: "{{ .Version }}-snapshot"
+
+gomod:
+  proxy: true
+
+report_sizes: true
 
 sboms:
   - artifacts: archive
-    id: archive
