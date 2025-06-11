@@ -116,3 +116,5 @@ test-env/
 logs/
 task-compose
 task-compose-gui
+# Added by goreleaser init:
+dist/
