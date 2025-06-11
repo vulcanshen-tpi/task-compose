@@ -40,16 +40,16 @@ builds:
 
 archives:
   - id: "task-compose-archives"
-    builds:
+    ids:
       - "task-compose-build" # 關聯到上面定義的 build id
-    format: tar.gz # 壓縮格式，通常是 tar.gz
+    formats: ['tar.gz']
     # 壓縮包的命名模板，會根據 OS, Arch 自動生成
     # 這個模板比你提供的官方範例更簡潔，但功能相同，通常更推薦用於非複雜情況
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     # 如果 Windows 需要 .zip 格式
     format_overrides:
       - goos: windows
-        format: zip
+        formats: [zip]
     # 額外包含在壓縮包內的文件，例如 README、LICENSE
     files:
       - README.md
