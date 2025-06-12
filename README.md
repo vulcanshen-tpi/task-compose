@@ -47,9 +47,7 @@ scoop install task-compose
 Download the compressed file that matches your system from [release](https://github.com/vulcanshen-tpi/task-compose/releases).
 The filename prefix will be `task-compose-portable_`.
 
-To run the portable executable, it must be in the same directory as the `task-compose.yaml` file.
-
-Simply run the portable executable to start tasks according to your `task-compose.yaml` configuration.
+To run the portable executable, it must be in the same directory with the `task-compose.yaml` file.
 
 ### Using Docker
 
