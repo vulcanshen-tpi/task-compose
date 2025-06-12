@@ -49,12 +49,6 @@ The filename prefix will be `task-compose-portable_`.
 
 To run the portable executable, it must be in the same directory with the `task-compose.yaml` file.
 
-### Using Docker
-
-```shell
-docker run --rm -v ./task-compose.yaml:/app/task-compose.yaml vulcantpisoft/task-compose up
-```
-
 ### Basics
 
 `task-compose.yaml`
@@ -74,10 +68,17 @@ To execute tasks defined in your configuration file:
 task-compose up
 ```
 
+output:
 ```shell
-task-compose|Using config file: .../task-compose.yaml
+task-compose|Using config file: ...(ellipsis)/task-compose.yaml
 echo|hello world
 echo|close |0: file already closed
+```
+
+### Using Docker
+
+```shell
+docker run --rm -v ./task-compose.yaml:/app/task-compose.yaml vulcantpisoft/task-compose up
 ```
 
 ### Command Line Interface (CLI)
