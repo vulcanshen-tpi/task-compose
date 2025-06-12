@@ -87,6 +87,15 @@ homebrew_casks:
     license: "MIT" # 你的專案許可證
     # goos 和 goarch 通常會從 builds 中繼承，不需要額外設定
 
+scoops:
+  - repository:
+      owner: vulcanshen-tpi
+      name: task-compose-scoop-bucket
+    directory: bucket
+    homepage: "https://github.com/vulcanshen-tpi/task-compose"
+    description: "A command orchestration tool for declarative task execution."
+    license: MIT
+
 dockers:
   - id: "task-compose-docker-amd64"
     use: buildx
