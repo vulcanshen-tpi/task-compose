@@ -8,15 +8,19 @@
 
 version: 2
 
-project_name: task-compose
-#before:
-#  hooks:
-#    # You may remove this if you don't use go modules.
-#    - go mod tidy
+env:
+  - GO111MODULE=on
+
+before:
+  hooks:
+    # You may remove this if you don't use go modules.
+    - go mod tidy
+
+universal_binaries:
+  - replace: false
 
 builds:
-  - id: "task-compose-build"
-    binary: "task-compose"
+  - binary: "task-compose"
     env:
       - CGO_ENABLED=0
     goos:
@@ -35,14 +39,10 @@ builds:
       - -X 'app.CommitHash={{.Commit}}'
       - -X 'app.BuildDate={{.Date}}'
       - -X 'app.ExecutionMode=CLI'
-      - -X 'main.builtBy=goreleaser' # 記錄是 goreleaser 建置的
     mod_timestamp: "{{ .CommitTimestamp }}"
 
 archives:
-  - id: "task-compose-archives"
-    ids:
-      - "task-compose-build" # 關聯到上面定義的 build id
-    formats: ['tar.gz']
+  - formats: ['tar.gz']
     # 壓縮包的命名模板，會根據 OS, Arch 自動生成
     # 這個模板比你提供的官方範例更簡潔，但功能相同，通常更推薦用於非複雜情況
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
@@ -86,17 +86,14 @@ homebrew_casks:
 dockers:
   - id: "task-compose-docker"
     use: buildx
+    goarch: amd64
     image_templates:
-      - "vulcantpisoft/task-compose:{{ .Version }}" # 帶版本號的標籤
-      - "vulcantpisoft/task-compose:latest"      # latest 標籤
-      # 為了支持多架構，建議包含 Arch 標籤
-      - "vulcantpisoft/task-compose:{{ .Version }}-{{ .Arch }}"
+      - "vulcantpisoft/task-compose:{{ .Version }}-amd64" # 帶版本號的標籤
     dockerfile: Dockerfile # 指定你的 Dockerfile 路徑 (通常在專案根目錄)
     build_flag_templates: # Docker build 命令的額外旗標
       - "--pull" # 總是拉取最新的基礎影像
-      - "--platform=linux/{{ .Arch }}" # 為了支持多架構，必須指定平台
-      # OCI 兼容標籤 (可選，但推薦用於容器最佳實踐)
-      - "--label=org.opencontainers.image.description=A command orchestration tool for task-compose."
+      - "--platform=linux/amd64" # 為了支持多架構，必須指定平台
+      - "--label=org.opencontainers.image.description=Designed to orchestrate and execute a series of commands based on a declarative YAML configuration file."
       - "--label=org.opencontainers.image.created={{.Date}}"
       - "--label=org.opencontainers.image.name={{.ProjectName}}"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
@@ -127,3 +124,43 @@ report_sizes: true
 
 sboms:
   - artifacts: archive
+
+changelog:
+  sort: asc
+  use: github
+  format: "{{ .SHA }}: {{ .Message }}{{ with .AuthorUsername }} (@{{ . }}){{ end }}"
+  filters:
+    exclude:
+      - "^test:"
+      - "^test\\("
+      - "^chore: update$"
+      - "^chore: docs$"
+      - "^docs: update$"
+      - "^chore: schema$"
+      - "^chore: typo$"
+      - "^chore: auto-update generated files$"
+      - "^chore: update schema$"
+      - "^chore: schema update$"
+      - "^chore\\(deps\\): "
+      - "^(build|ci): "
+      - "merge conflict"
+      - "merge conflict"
+      - Merge pull request
+      - Merge remote-tracking branch
+      - Merge branch
+      - go mod tidy
+  groups:
+    - title: "New Features"
+      regexp: '^.*?feat(\(.+\))??!?:.+$'
+      order: 100
+    - title: "Security updates"
+      regexp: '^.*?sec(\(.+\))??!?:.+$'
+      order: 150
+    - title: "Bug fixes"
+      regexp: '^.*?(fix|refactor)(\(.+\))??!?:.+$'
+      order: 200
+    - title: "Documentation updates"
+      regexp: ^.*?docs?(\(.+\))??!?:.+$
+      order: 400
+    - title: Other work
+      order: 9999
