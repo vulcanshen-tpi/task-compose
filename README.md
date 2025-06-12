@@ -15,6 +15,11 @@ With `task-compose`, you define your tasks, their execution parameters, and thei
 - Dependency Management: Specify task dependencies to control the startup order.
 - Flexible Execution: Set base_dir, executable, args, and envs for each task.
 
+# Important Note!
+
+Because we haven't purchased Apple and Microsoft developer accounts,
+you'll currently need to manually bypass system security blocks when running the application.
+
 ## Installation
 
 ### Using Package Manager
