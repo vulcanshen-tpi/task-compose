@@ -184,8 +184,8 @@ gomod:
 
 report_sizes: true
 
-sboms:
-  - artifacts: archive
+#sboms:
+#  - artifacts: archive
 
 changelog:
   sort: asc

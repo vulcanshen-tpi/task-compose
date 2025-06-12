@@ -52,17 +52,10 @@ var UpCmd = &cobra.Command{
 			go task.Start(waitGroup)
 		}
 
-		//for _, layer := range taskLayers {
-		//	//log.Printf("layer(%d): %v\n", i, layer)
-		//	for _, taskName := range layer {
-		//		go AppTasks[taskName].Start(waitGroup)
-		//		//log.Printf("\t %v\n", utils.Convertor.ToJson(AppTasks[taskName]))
-		//	}
-		//}
 		waitGroup.Wait()
 	},
 }
 
 func init() {
-	UpCmd.PersistentFlags().BoolVarP(&app.DetachMode, "detach", "d", false, "Launch in tasks in detached mode")
+	UpCmd.PersistentFlags().BoolVarP(&app.DetachMode, "detach", "d", false, "Launch in tasks in the background")
 }
