@@ -22,7 +22,8 @@ universal_binaries:
   - replace: false
 
 builds:
-  - binary: "task-compose"
+  - id: "task-compose-cli-build"
+    binary: "task-compose"
     env:
       - CGO_ENABLED=0
     goos:
@@ -44,12 +45,58 @@ builds:
       - -X {{.ModulePath}}/app.BuildDate={{.CommitDate}}
       - -X {{.ModulePath}}/app.ExecutionMode=CLI
     mod_timestamp: "{{ .CommitTimestamp }}"
+  - id: "task-compose-portable-build"
+    binary: "task-compose-portable"
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch: # 目標 CPU 架構
+      - amd64
+      - arm64
+    goarm: # 針對 ARMv6 和 ARMv7 (例如 Raspberry Pi)
+      - "6"
+      - "7"
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X {{.ModulePath}}/app.Version={{.Version}}
+      - -X {{.ModulePath}}/app.CommitHash={{.ShortCommit}}
+      - -X {{.ModulePath}}/app.BuildDate={{.CommitDate}}
+      - -X {{.ModulePath}}/app.ExecutionMode=GUI
+    mod_timestamp: "{{ .CommitTimestamp }}"
 
 archives:
-  - formats: ['tar.gz']
+  - id: "task-compose-cli-archive"
+    formats: ['tar.gz']
+    ids:
+      - task-compose-cli-build
     # 壓縮包的命名模板，會根據 OS, Arch 自動生成
     # 這個模板比你提供的官方範例更簡潔，但功能相同，通常更推薦用於非複雜情況
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    # 如果 Windows 需要 .zip 格式
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    # 額外包含在壓縮包內的文件，例如 README、LICENSE
+    files:
+      - README.md
+      - LICENSE
+    # 設置壓縮包內文件的權限和時間戳 (可選，但可保持一致性)
+    builds_info:
+      group: root
+      owner: root
+      mtime: "{{ .CommitDate }}"
+  - id: "task-compose-portable-archive"
+    formats: ['tar.gz']
+    ids:
+      - task-compose-portable-build
+    # 壓縮包的命名模板，會根據 OS, Arch 自動生成
+    # 這個模板比你提供的官方範例更簡潔，但功能相同，通常更推薦用於非複雜情況
+    name_template: "{{ .ProjectName }}-portable_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     # 如果 Windows 需要 .zip 格式
     format_overrides:
       - goos: windows
@@ -85,19 +132,24 @@ homebrew_casks:
     homepage: "https://github.com/vulcanshen-tpi/task-compose" # 你的專案首頁
     description: "Designed to orchestrate and execute a series of commands based on a declarative YAML configuration file." # Homebrew Formula 的簡短描述
     license: "MIT" # 你的專案許可證
-    # goos 和 goarch 通常會從 builds 中繼承，不需要額外設定
+    ids:
+      - task-compose-cli-build
 
 scoops:
   - repository:
       owner: vulcanshen-tpi
-      name: task-compose-scoop-bucket
+      name: scoop-bucket
     directory: bucket
     homepage: "https://github.com/vulcanshen-tpi/task-compose"
     description: "A command orchestration tool for declarative task execution."
     license: MIT
+    ids:
+      - task-compose-cli-build
 
 dockers:
   - id: "task-compose-docker-amd64"
+    ids:
+      - task-compose-cli-build
     use: buildx
     goarch: amd64
     image_templates:
