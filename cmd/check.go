@@ -6,7 +6,7 @@ import (
 	"github.com/vulcanshen-tpi/task-compose/app"
 	"github.com/vulcanshen-tpi/task-compose/config"
 	"github.com/vulcanshen-tpi/task-compose/utils"
-	"log"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -16,8 +16,14 @@ var CheckCmd = &cobra.Command{
 	Short: "Confirm the correctness of the YAML content",
 	Long:  "Confirm the correctness of the YAML content: task-compose check",
 	Run: func(cmd *cobra.Command, args []string) {
+		
+		if dir, err := os.Getwd(); err == nil {
+			message := fmt.Sprintf("launch dir %s", dir)
+			utils.SharedAppLogger.Info(message)
+		}
+
 		if err := CheckConfig(); err != nil {
-			log.Fatal("Error unmarshalling config:", err)
+			utils.SharedAppLogger.Fatal(err)
 		}
 
 		if len(config.AppConfig.Tasks) > 0 {

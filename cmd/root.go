@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/vulcanshen-tpi/task-compose/app"
 	"github.com/vulcanshen-tpi/task-compose/utils"
@@ -72,8 +71,8 @@ func SwitchLaunchDir() {
 		}
 	}
 
-	if dir, err := os.Getwd(); err == nil {
-		message := fmt.Sprintf("launch dir %s", dir)
-		utils.SharedAppLogger.Info(message)
-	}
+	//if dir, err := os.Getwd(); err == nil {
+	//	message := fmt.Sprintf("launch dir %s", dir)
+	//	utils.SharedAppLogger.Info(message)
+	//}
 }
