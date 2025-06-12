@@ -55,12 +55,29 @@ To run the portable executable, it must be in the same directory with the `task-
 docker run --rm -v ./task-compose.yaml:/app/task-compose.yaml vulcantpisoft/task-compose up
 ```
 
-### Basic Command
+### Basics
+
+`task-compose.yaml`
+
+```yaml
+tasks:
+  - name: echo
+    executable: echo
+    args:
+      - hello
+      - world
+```
 
 To execute tasks defined in your configuration file:
 
 ```bash
-task-compose -f task-compose.yaml up
+task-compose up
+```
+
+```shell
+task-compose|Using config file: .../task-compose.yaml
+echo|hello world
+echo|close |0: file already closed
 ```
 
 ### Command Line Interface (CLI)
