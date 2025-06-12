@@ -115,6 +115,6 @@ fabric.properties
 test-env/
 logs/
 task-compose
-task-compose-gui
+task-compose-portable
 # Added by goreleaser init:
 dist/

@@ -8,6 +8,8 @@
 
 version: 2
 
+project_name: task-compose
+
 env:
   - GO111MODULE=on
 
@@ -33,12 +35,14 @@ builds:
     goarm: # 針對 ARMv6 和 ARMv7 (例如 Raspberry Pi)
       - "6"
       - "7"
-    ldflags: # 傳遞給 Go 編譯器的連結旗標，用於注入版本、Commit 等資訊
-      - -s -w # 移除符號表和調試資訊，減小文件大小
-      - -X 'app.Version={{.Version}}'
-      - -X 'app.CommitHash={{.Commit}}'
-      - -X 'app.BuildDate={{.Date}}'
-      - -X 'app.ExecutionMode=CLI'
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X {{.ModulePath}}/app.Version={{.Version}}
+      - -X {{.ModulePath}}/app.CommitHash={{.ShortCommit}}
+      - -X {{.ModulePath}}/app.BuildDate={{.CommitDate}}
+      - -X {{.ModulePath}}/app.ExecutionMode=CLI
     mod_timestamp: "{{ .CommitTimestamp }}"
 
 archives:

@@ -14,10 +14,9 @@ GUI_LDFLAGS := -X '${GO_MODULE_PATH}/app.Version=$$(git describe --tags)' \
 build:
 	@echo "Building $(APP_NAME) with LDFLAGS: $(LDFLAGS)"
 	go build -ldflags="$(CLI_LDFLAGS)" -o $(APP_NAME)
-	go build -ldflags="$(GUI_LDFLAGS)" -o $(APP_NAME)-gui
+	go build -ldflags="$(GUI_LDFLAGS)" -o $(APP_NAME)-portable
 
 clean:
 	@echo "Cleaning..."
-	rm -f $(APP_NAME)-cli
-	rm -f $(APP_NAME)-gui
+	rm -f $(APP_NAME)-portable
 	rm -f $(APP_NAME)
