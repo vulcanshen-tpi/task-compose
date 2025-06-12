@@ -88,7 +88,7 @@ homebrew_casks:
     # goos 和 goarch 通常會從 builds 中繼承，不需要額外設定
 
 dockers:
-  - id: "task-compose-docker"
+  - id: "task-compose-docker-amd64"
     use: buildx
     goarch: amd64
     image_templates:
@@ -97,6 +97,24 @@ dockers:
     build_flag_templates: # Docker build 命令的額外旗標
       - "--pull" # 總是拉取最新的基礎影像
       - "--platform=linux/amd64" # 為了支持多架構，必須指定平台
+      - "--label=org.opencontainers.image.description=Designed to orchestrate and execute a series of commands based on a declarative YAML configuration file."
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+    extra_files:
+      - README.md
+      - LICENSE
+  - id: "task-compose-docker-arm64"
+    use: buildx
+    goarch: arm64
+    image_templates:
+      - "vulcantpisoft/task-compose:{{ .Version }}-arm64" # 帶版本號的標籤
+    dockerfile: Dockerfile # 指定你的 Dockerfile 路徑 (通常在專案根目錄)
+    build_flag_templates: # Docker build 命令的額外旗標
+      - "--pull" # 總是拉取最新的基礎影像
+      - "--platform=linux/arm64" # 為了支持多架構，必須指定平台
       - "--label=org.opencontainers.image.description=Designed to orchestrate and execute a series of commands based on a declarative YAML configuration file."
       - "--label=org.opencontainers.image.created={{.Date}}"
       - "--label=org.opencontainers.image.name={{.ProjectName}}"
