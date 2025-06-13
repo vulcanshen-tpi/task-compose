@@ -158,14 +158,16 @@ func (t *Task) Start(wg *sync.WaitGroup) {
 
 	if app.DetachMode {
 		wg.Done()
+		return
 	}
 
 	if state, _ := t.process.Process.Wait(); state != nil {
 		if state.Exited() {
 			t.logger.Log("Completed")
-			wg.Done()
 		}
 	}
+
+	wg.Done()
 
 }
 
