@@ -284,3 +284,7 @@ tasks:
 ```
 
 Double-click the task-compose portable executable or run `task-compose up` in your current directory's terminal.
+
+# Implementations
+
+- [how-to-make-digirunner-opensource-launch-standalone](https://github.com/vulcanshen-tpi/how-to-make-digirunner-opensource-launch-standalone)
