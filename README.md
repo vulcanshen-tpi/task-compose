@@ -82,7 +82,7 @@ output:
 ```shell
 task-compose|Using config file: ...(ellipsis)/task-compose.yaml
 echo|hello world
-echo|close |0: file already closed
+echo|Completed
 ```
 
 ### Using Docker
