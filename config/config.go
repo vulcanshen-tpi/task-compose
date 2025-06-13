@@ -69,6 +69,10 @@ var AppConfig LauncherConfig
 
 var AppTasksConfig map[string]TaskConfig
 
+func GetDefaultFileNameWithExtension() string {
+	return fmt.Sprintf("%s.yaml", defaultFileName)
+}
+
 func InitConfig() {
 	//logger := log.New(os.Stdout, "", 0)
 	viper.SetEnvPrefix("CMD_COMPOSE")

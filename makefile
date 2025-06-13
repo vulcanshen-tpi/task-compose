@@ -16,6 +16,12 @@ build:
 	go build -ldflags="$(CLI_LDFLAGS)" -o $(APP_NAME)
 	go build -ldflags="$(GUI_LDFLAGS)" -o $(APP_NAME)-portable
 
+release:
+	goreleaser release --clean
+
+prerelease:
+	goreleaser release --skip=publish --clean --skip=validate
+
 clean:
 	@echo "Cleaning..."
 	rm -f $(APP_NAME)-portable

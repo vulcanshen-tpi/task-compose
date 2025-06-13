@@ -16,9 +16,9 @@ var CheckCmd = &cobra.Command{
 	Short: "Confirm the correctness of the YAML content",
 	Long:  "Confirm the correctness of the YAML content: task-compose check",
 	Run: func(cmd *cobra.Command, args []string) {
-		
+
 		if dir, err := os.Getwd(); err == nil {
-			message := fmt.Sprintf("launch dir %s", dir)
+			message := fmt.Sprintf("dir: %s", dir)
 			utils.SharedAppLogger.Info(message)
 		}
 

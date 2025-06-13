@@ -29,6 +29,7 @@ func Execute() {
 	rootCmd.AddCommand(UpCmd)
 	rootCmd.AddCommand(DownCmd)
 	rootCmd.AddCommand(VersionCmd)
+	rootCmd.AddCommand(InitCmd)
 
 	//utils.SharedAppLogger.Info(fmt.Sprintf("args:%v, execution mode: %v", os.Args, app.ExecutionMode))
 	if len(os.Args) == 1 && app.ExecutionMode == "GUI" {

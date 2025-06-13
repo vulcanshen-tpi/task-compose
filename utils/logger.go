@@ -53,30 +53,33 @@ func (apl *AppLogger) getPrefix() string {
 	return Convertor.Colored(fmt.Sprintf("%s|", apl.prefix), apl.color)
 }
 
-func (apl *AppLogger) Info(message string) {
+func (apl *AppLogger) Info(message ...string) {
+	var msg = strings.Join(message, " ")
 	if !app.DetachMode {
-		apl.console.Printf("%s%s", apl.getPrefix(), message)
+		apl.console.Printf("%s%s", apl.getPrefix(), msg)
 	}
 	if apl.file != nil {
-		apl.file.Printf("%s", message)
+		apl.file.Printf("%s", msg)
 	}
 }
 
-func (apl *AppLogger) Success(message string) {
+func (apl *AppLogger) Success(message ...string) {
+	var msg = strings.Join(message, " ")
 	if !app.DetachMode {
-		apl.console.Printf("%s%s", apl.getPrefix(), Convertor.ToSuccessColor(message))
+		apl.console.Printf("%s%s", apl.getPrefix(), Convertor.ToSuccessColor(msg))
 	}
 	if apl.file != nil {
-		apl.file.Printf("%s", message)
+		apl.file.Printf("%s", msg)
 	}
 }
 
-func (apl *AppLogger) Warn(message string) {
+func (apl *AppLogger) Warn(message ...string) {
+	var msg = strings.Join(message, " ")
 	if !app.DetachMode {
-		apl.console.Printf("%s%s", apl.getPrefix(), Convertor.ToWarningColor(message))
+		apl.console.Printf("%s%s", apl.getPrefix(), Convertor.ToWarningColor(msg))
 	}
 	if apl.file != nil {
-		apl.file.Printf("%s", message)
+		apl.file.Printf("%s", msg)
 	}
 }
 
