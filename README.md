@@ -36,6 +36,9 @@ you'll currently need to manually bypass system security blocks when running the
 brew tap vulcanshen-tpi/tap
 # install task-compose
 brew install --cask task-compose
+
+# as "Important Note!" above
+xattr -dr com.apple.quarantine /opt/homebrew/bin/task-compose
 ```
 
 #### Scoop (windows)
