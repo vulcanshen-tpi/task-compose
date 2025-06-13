@@ -17,9 +17,9 @@ With `task-compose`, you define your tasks, their execution parameters, and thei
 
 
 
-# <span style="color: red;">Important Note!</span>
+$\color{Red}\Huge{\textsf{Important Note!}}$
 
-Because we have <span style="color: yellow;">NOT</span> purchased Apple and Microsoft developer accounts,
+Because we have $\color{Yellow}\large{\textbf{NOT}}$ purchased Apple and Microsoft developer accounts,
 you'll currently need to manually bypass system security blocks when running the application.
 
 
