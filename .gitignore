@@ -118,3 +118,4 @@ task-compose
 task-compose-portable
 # Added by goreleaser init:
 dist/
+.tmp/

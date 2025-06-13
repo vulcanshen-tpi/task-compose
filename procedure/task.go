@@ -48,8 +48,8 @@ type TaskProcessLog struct {
 const (
 	PidFile                   = ".taskpid.yaml"
 	healthCheckDefaultTimeout = 10 * time.Second
-	healthCheckInterval       = 5 * time.Second
-	healthCheckTries          = 3
+	healthCheckInterval       = 1 * time.Second
+	healthCheckTries          = 5
 	healthCheckStartDelay     = 1 * time.Second
 )
 
@@ -80,8 +80,9 @@ func (t *Task) Start(wg *sync.WaitGroup) {
 			break
 		}
 		if terminated {
+			// dependency terminated
 			t.Terminated = true
-			t.terminate()
+			t.terminate(wg)
 			return
 		}
 		time.Sleep(1 * time.Second)
@@ -123,7 +124,15 @@ func (t *Task) Start(wg *sync.WaitGroup) {
 			break
 		}
 		failures++
-		t.logger.Warn(fmt.Sprintf("Health check %d/%d try", failures, tries))
+		var healthcheckMessage = fmt.Sprintf("Health check %d/%d fail", failures, tries)
+		if t.isHealthCheckConfigured() {
+			t.logger.Warn(healthcheckMessage)
+			if spinner, ok := TaskSpinner.GetSpinner(t.Name); ok {
+				var previousMsg = spinner.GetMessage()
+				spinner.UpdateMessage(previousMsg + "|" + healthcheckMessage)
+			}
+		}
+
 		if failures >= tries {
 			t.Healthy = false
 			break
@@ -131,22 +140,31 @@ func (t *Task) Start(wg *sync.WaitGroup) {
 	}
 
 	if t.Healthy {
+		var healthcheckMessage = fmt.Sprintf("Health check %d/%d success", failures+1, tries)
 		if t.isHealthCheckConfigured() {
-			t.logger.Success(fmt.Sprintf("Healthy check %d/%d success", failures+1, tries))
+			t.logger.Success(healthcheckMessage)
 		}
 		if spinner, ok := TaskSpinner.GetSpinner(t.Name); ok {
-			spinner.CompleteWithMessage("Done")
+			spinner.CompleteWithMessage("Done" + "|" + healthcheckMessage)
 		}
 	} else {
+		var healthcheckMessage = fmt.Sprintf("Health check %d/%d fail", failures, tries)
 		if spinner, ok := TaskSpinner.GetSpinner(t.Name); ok {
-			spinner.ErrorWithMessage("Healthcheck failed")
+			spinner.ErrorWithMessage(healthcheckMessage)
 		}
-		t.terminate()
+		t.terminate(wg)
 		t.Terminated = true
 	}
 
 	if app.DetachMode {
 		wg.Done()
+	}
+
+	if state, _ := t.process.Process.Wait(); state != nil {
+		if state.Exited() {
+			t.logger.Success("Completed")
+			wg.Done()
+		}
 	}
 
 }
@@ -155,8 +173,7 @@ func (t *Task) checkDependencies() (bool, bool) {
 	var check = true
 	for _, dependency := range t.DependsOn {
 		if dependency.Terminated {
-			check = false
-			return check, true
+			return false, true
 		}
 		check = dependency.Healthy && check
 	}
@@ -331,8 +348,11 @@ func (t *Task) runCommand() {
 				t.logger.Info(line)
 			}
 			if err := stdoutPipe.Close(); err != nil {
+				if description := err.Error(); description == "close |0: file already closed" {
+					// task ended.
+					return
+				}
 				t.logger.Error(err)
-				//logger.Printf("%s|%v\n", prefix, utils.Convertor.ToErrorColor(err.Error()))
 			}
 		}()
 		go func() {
@@ -341,7 +361,11 @@ func (t *Task) runCommand() {
 				line := scanner.Text()
 				t.logger.Error(fmt.Errorf(line))
 			}
-			if err := stdoutPipe.Close(); err != nil && err != io.EOF {
+			if err := stdoutPipe.Close(); err != nil {
+				if description := err.Error(); description == "close |0: file already closed" {
+					// task ended.
+					return
+				}
 				t.logger.Error(err)
 			}
 		}()
@@ -354,7 +378,7 @@ func (t *Task) runCommand() {
 	}
 }
 
-func (t *Task) terminate() {
+func (t *Task) terminate(wg *sync.WaitGroup) {
 	if t.process != nil && t.process.Process != nil {
 		if err := t.process.Process.Kill(); err != nil {
 			if spinner, ok := TaskSpinner.GetSpinner(t.Name); ok {
@@ -362,4 +386,5 @@ func (t *Task) terminate() {
 			}
 		}
 	}
+	wg.Done()
 }
