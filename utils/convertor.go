@@ -19,6 +19,10 @@ func (convertor *convertor) ToJson(any any) string {
 	return string(jsonData)
 }
 
+func (convertor *convertor) ToLogColor(message string) string {
+	return convertor.Colored(message, LogColor)
+}
+
 func (convertor *convertor) ToErrorColor(message string) string {
 	return convertor.Colored(message, ErrorColor)
 }

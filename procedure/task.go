@@ -162,7 +162,7 @@ func (t *Task) Start(wg *sync.WaitGroup) {
 
 	if state, _ := t.process.Process.Wait(); state != nil {
 		if state.Exited() {
-			t.logger.Success("Completed")
+			t.logger.Log("Completed")
 			wg.Done()
 		}
 	}

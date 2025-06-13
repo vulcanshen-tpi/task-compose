@@ -73,6 +73,13 @@ func (apl *AppLogger) Success(message ...string) {
 	}
 }
 
+func (apl *AppLogger) Log(message ...string) {
+	var msg = strings.Join(message, " ")
+	if !app.DetachMode {
+		apl.console.Printf("%s%s", apl.getPrefix(), Convertor.ToLogColor(msg))
+	}
+}
+
 func (apl *AppLogger) Warn(message ...string) {
 	var msg = strings.Join(message, " ")
 	if !app.DetachMode {
