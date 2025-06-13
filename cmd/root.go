@@ -43,8 +43,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(SwitchLaunchDir)
-	rootCmd.PersistentFlags().StringVarP(&app.TasksComposeFile, "configfile", "f", "", "Specify the path to the configuration file, default is 'task-compose.yaml'")
-	rootCmd.PersistentFlags().BoolVar(&app.DebugMode, "debug", false, "Launch in tasks in debug mode")
+	rootCmd.PersistentFlags().BoolVar(&app.DebugMode, "debug", false, "Enabling debug mode will display more detailed console logs.")
 	if app.ExecutionMode == "" {
 		app.ExecutionMode = "GUI"
 	}

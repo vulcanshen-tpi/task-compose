@@ -57,5 +57,6 @@ var UpCmd = &cobra.Command{
 }
 
 func init() {
-	UpCmd.PersistentFlags().BoolVarP(&app.DetachMode, "detach", "d", false, "Launch in tasks in the background")
+	UpCmd.PersistentFlags().BoolVarP(&app.DetachMode, "detach", "d", false, "Launch tasks in the background")
+	UpCmd.PersistentFlags().StringVarP(&app.TasksComposeFile, "configfile", "f", "", "Specify the path to the configuration file, default is 'task-compose.yaml'")
 }
