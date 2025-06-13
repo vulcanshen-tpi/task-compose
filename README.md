@@ -134,7 +134,11 @@ The `tasks` key at the root of your YAML file contains a list of individual task
 | `healthcheck.frequency.retries`                             | int                | The maximum number of consecutive failed health checks before the task is considered unhealthy.                                                                  |
 | `healthcheck.frequency.delay`                               | duration string    | The initial delay before the first health check attempt is made after a task starts                                                                              |e.g., 5s.|
 
+### Logging
 
+The application's startup logs will be located in the `logs/` directory. 
+
+Each log file will be named in the format `{task:name}-{date}.log`
 
 ### Examples
 
@@ -180,6 +184,8 @@ new-dir/
           - -jar
           - myapp.jar
     ```
+
+Double-click the task-compose portable executable or run `task-compose up` in your current directory's terminal.
 
 #### Example 2: Portable Elasticsearch and Kibana Set
 
@@ -273,4 +279,4 @@ tasks:
       - kibana
 ```
 
-If you execute `task-compose up`, elasticsearch, curl1, kibana, and curl2 tasks will be launched in sequence.
+Double-click the task-compose portable executable or run `task-compose up` in your current directory's terminal.
