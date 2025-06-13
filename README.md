@@ -15,10 +15,13 @@ With `task-compose`, you define your tasks, their execution parameters, and thei
 - Dependency Management: Specify task dependencies to control the startup order.
 - Flexible Execution: Set base_dir, executable, args, and envs for each task.
 
-# Important Note!
 
-Because we haven't purchased Apple and Microsoft developer accounts,
+
+# <span style="color: red;">Important Note!</span>
+
+Because we have <span style="color: yellow;">NOT</span> purchased Apple and Microsoft developer accounts,
 you'll currently need to manually bypass system security blocks when running the application.
+
 
 ## Installation
 
@@ -103,20 +106,102 @@ task-compose [command]
  | version    | Show version number and build details of task-compose.      |
 
 
-### Example Configuration (task-compose.yaml demo)
+### Configuration File Reference
 
-Here's an example of how you might configure `task-compose` to start Elasticsearch and Kibana, with proper health checks and dependencies:
+The `tasks` key at the root of your YAML file contains a list of individual task definitions. Each task can have the following properties:
+
+
+| key                                                         | type               | description                                                                                                                                                      |
+|:------------------------------------------------------------|:-------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `name`                                                      | string, required   | A unique identifier for the task.                                                                                                                                |
+| `base_dir`                                                  | string             | The working directory for the command. cmd.Dir will be set to this path. If not specified, the current working directory of task-compose will be used.           |
+| `executable`                                                | string, required   | The path to the executable command                                                                                                                               |e.g., node, java, ./my-app.|
+| `args`                                                      | []string           | A list of arguments to pass to the executable.                                                                                                                   |
+| `envs`                                                      | []string           | A list of environment variables to set for the command                                                                                                           |e.g., KEY=VALUE. These are merged with the parent process's environment variables.|
+| `depends_on`                                                | []string           | A list of task names that this task depends on. This task will only start after all its dependencies have successfully passed their health checks.               |
+| `healthcheck`                                               | object             | Defines how task-compose determines if a task is healthy.                                                                                                        |
+| `healthcheck.http`                                          | object             | Configures an HTTP GET health check.                                                                                                                             |
+| `healthcheck.http.url`                                      | string, required   | The URL to send the HTTP GET request to.                                                                                                                         |
+| `healthcheck.http.expect`                                   | object, optional   | Defines expected responses.If not set, a 2xx HTTP status code indicates health.                                                                                  |
+| `healthcheck.http.expect.json`                              | object             | Expects a JSON response.                                                                                                                                         |
+| `healthcheck.http.expect.json.jsonpath`                     | string, required   | A JSONPath expression to extract a value from the response.                                                                                                      |
+| `healthcheck.http.expect.json.value`                        | string, required   | The expected value                                                                                                                                               |as a string to match against the extracted JSONPath value.|
+| `healthcheck.command`                                       | object             | Configures a command-based health check.                                                                                                                         |
+| `healthcheck.command.scripts`                               | []string, required | A list where the first element is the command, and subsequent elements are its arguments. The command is considered healthy if it exits with a zero status code. |
+| `healthcheck.frequency`                                     | object             | Controls the timing of health checks.                                                                                                                            |
+| `healthcheck.frequency.interval`                            | duration string    | The time between consecutive health check attempts                                                                                                               |e.g., 5s, 1m.|
+| `healthcheck.frequency.timeout`                             | duration string    | The maximum time allowed for a single health check attempt                                                                                                       |e.g., 10s.|
+| `healthcheck.frequency.retries`                             | int                | The maximum number of consecutive failed health checks before the task is considered unhealthy.                                                                  |
+| `healthcheck.frequency.delay`                               | duration string    | The initial delay before the first health check attempt is made after a task starts                                                                              |e.g., 5s.|
+
+
+
+### Examples
+
+#### Example 1: Java Application Portable Launch Package
+
+Here's an example of how you might configure `task-compose` to start .jar file using java command
+
+**Prerequisite**
+1. prepare your `myapp.jar` file.
+2. (Optional) prepare portable jre. (e.g [Azul Zulu](https://www.azul.com/downloads/#zulu))
+3. create a new directory, put in your `myapp.jar` and jre directory. The file structure as below:
+
+```
+new-dir/
+├─ jre/
+    ├─ bin/
+        ├─ java(.exe)
+├─ myapp.jar
+├─ task-compose.yaml
+├─ (Optional) task-compose-portable(.exe)
+```
+
+**Example of task-compose.yaml**
+
+- With Portable Jre Java
+    ```yaml
+    tasks:
+      - name: myapp
+        base_dir: .
+        executable: jre/bin/java(.exe) # portable jre executable
+        args:
+          - -jar
+          - myapp.jar
+    ```
+
+- Use System Jre Java
+    ```yaml
+    tasks:
+      - name: myapp
+        base_dir: .
+        executable: java # call system java command
+        args:
+          - -jar
+          - myapp.jar
+    ```
+
+#### Example 2: Portable Elasticsearch and Kibana Set
+
+Here's an example of how you might configure `task-compose` to start Elasticsearch and Kibana, 
+with proper health checks and dependencies:
+
+**Prerequisite**
+
+1. download [elasticsearch](https://www.elastic.co/downloads/elasticsearch)
+2. download [kibana](https://www.elastic.co/downloads/kibana)
+3. Unzip the downloaded files and place them in the same directory. The file structure as below:
 
 files structure:
 ```
-demo-dir/
+new-dir/
 ├─ elasticsearch/
 ├─ kibana/
 ├─ task-compose.yaml
 ├─ kibana.yml
 ```
 
-kibana.yml
+**Example of kibana.yaml**
 
 ```yaml
 csp.strict: false
@@ -125,10 +210,10 @@ telemetry:
   enabled: false
 xpack:
   encryptedSavedObjects:
-    encryptionKey: "01234567890123456789012345678901"
+    encryptionKey: "01234567890123456789012345678901" # only for demo
 ```
 
-task-compose.yaml
+**Example of task-compose.yaml**
 
 ```yaml
 tasks:
@@ -189,31 +274,3 @@ tasks:
 ```
 
 If you execute `task-compose up`, elasticsearch, curl1, kibana, and curl2 tasks will be launched in sequence.
-
-### Configuration File Reference
-
-The `tasks` key at the root of your YAML file contains a list of individual task definitions. Each task can have the following properties:
-
-
-| key                                                         | type               | description                                                                                                                                                      |
-|:------------------------------------------------------------|:-------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `name`                                                      | string, required   | A unique identifier for the task.                                                                                                                                |
-| `base_dir`                                                  | string             | The working directory for the command. cmd.Dir will be set to this path. If not specified, the current working directory of task-compose will be used.           |
-| `executable`                                                | string, required   | The path to the executable command                                                                                                                               |e.g., node, java, ./my-app.|
-| `args`                                                      | []string           | A list of arguments to pass to the executable.                                                                                                                   |
-| `envs`                                                      | []string           | A list of environment variables to set for the command                                                                                                           |e.g., KEY=VALUE. These are merged with the parent process's environment variables.|
-| `depends_on`                                                | []string           | A list of task names that this task depends on. This task will only start after all its dependencies have successfully passed their health checks.               |
-| `healthcheck`                                               | object             | Defines how task-compose determines if a task is healthy.                                                                                                        |
-| `healthcheck.http`                                          | object             | Configures an HTTP GET health check.                                                                                                                             |
-| `healthcheck.http.url`                                      | string, required   | The URL to send the HTTP GET request to.                                                                                                                         |
-| `healthcheck.http.expect`                                   | object, optional   | Defines expected responses.If not set, a 2xx HTTP status code indicates health.                                                                                  |
-| `healthcheck.http.expect.json`                              | object             | Expects a JSON response.                                                                                                                                         |
-| `healthcheck.http.expect.json.jsonpath`                     | string, required   | A JSONPath expression to extract a value from the response.                                                                                                      |
-| `healthcheck.http.expect.json.value`                        | string, required   | The expected value                                                                                                                                               |as a string to match against the extracted JSONPath value.|
-| `healthcheck.command`                                       | object             | Configures a command-based health check.                                                                                                                         |
-| `healthcheck.command.scripts`                               | []string, required | A list where the first element is the command, and subsequent elements are its arguments. The command is considered healthy if it exits with a zero status code. |
-| `healthcheck.frequency`                                     | object             | Controls the timing of health checks.                                                                                                                            |
-| `healthcheck.frequency.interval`                            | duration string    | The time between consecutive health check attempts                                                                                                               |e.g., 5s, 1m.|
-| `healthcheck.frequency.timeout`                             | duration string    | The maximum time allowed for a single health check attempt                                                                                                       |e.g., 10s.|
-| `healthcheck.frequency.retries`                             | int                | The maximum number of consecutive failed health checks before the task is considered unhealthy.                                                                  |
-| `healthcheck.frequency.delay`                               | duration string    | The initial delay before the first health check attempt is made after a task starts                                                                              |e.g., 5s.|
