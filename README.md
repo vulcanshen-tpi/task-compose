@@ -17,7 +17,7 @@ With `task-compose`, you define your tasks, their execution parameters, and thei
 
 
 
-$\color{Red}\Huge{\textsf{Important Note!}}$
+# $\color{Red}\Huge{\textsf{Important Note!}}$
 
 Because we have $\color{Yellow}\large{\textbf{NOT}}$ purchased Apple and Microsoft developer accounts,
 you'll currently need to manually bypass system security blocks when running the application.
