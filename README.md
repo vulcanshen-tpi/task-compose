@@ -108,6 +108,7 @@ task-compose [command]
  | help       | Help about any command.                                     |
  | up         | Execute tasks according to the YAML configuration file.     |
  | version    | Show version number and build details of task-compose.      |
+| init       | Generate minimal task-compose.yaml file                     |
 
 
 ### Configuration File Reference
