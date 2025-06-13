@@ -43,7 +43,9 @@ brew install --cask task-compose
 - [scoop installation](https://scoop.sh/)
 
 ```shell
+# add scoop tap
 scoop bucket add vulcanshen-tpi https://github.com/vulcanshen-tpi/scoop-bucket.git
+# install task-compose
 scoop install task-compose
 ```
 
