@@ -29,6 +29,8 @@ you'll currently need to manually bypass system security blocks when running the
 
 #### Homebrew (macos/linux)
 
+- [homebrew installation](https://brew.sh/)
+
 ```shell
 # add brew tap
 brew tap vulcanshen-tpi/tap
