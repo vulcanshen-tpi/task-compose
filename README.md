@@ -37,8 +37,8 @@ brew tap vulcanshen-tpi/tap
 # install task-compose
 brew install --cask task-compose
 
-# as "Important Note!" above
-xattr -dr com.apple.quarantine /opt/homebrew/bin/task-compose
+# macos (as "Important Note!" mention above)
+xattr -dr com.apple.quarantine $(which task-compose)
 ```
 
 #### Scoop (windows)
