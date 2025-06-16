@@ -6,7 +6,6 @@ import (
 	"github.com/vulcanshen-tpi/task-compose/config"
 	"github.com/vulcanshen-tpi/task-compose/procedure"
 	"github.com/vulcanshen-tpi/task-compose/utils"
-	"log"
 	"sync"
 )
 
@@ -32,7 +31,7 @@ var UpCmd = &cobra.Command{
 		for _, taskConfig := range config.AppTasksConfig {
 			var task, err = procedure.CreateTask(taskConfig)
 			if err != nil {
-				log.Fatalln("Error creating task:", err)
+				utils.SharedAppLogger.Fatal(err)
 			}
 			AppTasks[taskConfig.Name] = task
 		}

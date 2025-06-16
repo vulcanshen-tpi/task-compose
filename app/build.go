@@ -4,5 +4,5 @@ var (
 	Version    string
 	BuildDate  string
 	CommitHash string
-	Portable   string = "false"
+	Portable   string
 )

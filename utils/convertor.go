@@ -3,7 +3,6 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 )
 
 type convertor struct{}
@@ -13,7 +12,7 @@ var Convertor = convertor{}
 func (convertor *convertor) ToJson(any any) string {
 	jsonData, err := json.Marshal(any)
 	if err != nil {
-		log.Fatalf("Error marshaling to JSON: %v", err)
+		SharedAppLogger.Error(err)
 	}
 
 	return string(jsonData)

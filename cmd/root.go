@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/vulcanshen-tpi/task-compose/app"
 	"github.com/vulcanshen-tpi/task-compose/utils"
+	"os"
 )
 
 var RootCmd = &cobra.Command{
@@ -28,12 +29,17 @@ func Execute() {
 	RootCmd.AddCommand(DownCmd)
 	RootCmd.AddCommand(VersionCmd)
 	RootCmd.AddCommand(InitCmd)
-
+	if len(os.Args) == 1 && app.Portable == "true" {
+		RootCmd.SetArgs([]string{UpCmd.Use})
+	}
 	if err := RootCmd.Execute(); err != nil {
 		utils.SharedAppLogger.Fatal(err)
 	}
 }
 
 func init() {
+	if app.Portable == "true" {
+		cobra.MousetrapHelpText = ""
+	}
 	RootCmd.PersistentFlags().BoolVar(&app.DebugMode, "debug", false, "Enabling debug mode will display more detailed console logs.")
 }

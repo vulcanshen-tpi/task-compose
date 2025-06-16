@@ -9,7 +9,6 @@ import (
 	"github.com/vulcanshen-tpi/task-compose/config"
 	"github.com/vulcanshen-tpi/task-compose/utils"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -303,6 +302,13 @@ func (t *Task) doHealthCheck() bool {
 }
 
 func (t *Task) logTaskProcess() {
+
+	if t.process == nil || t.process.Process == nil {
+		msg := fmt.Sprintf("t.process:%v, t.process.Process: %v", t.process, t.process.Process)
+		utils.SharedAppLogger.Debug(msg)
+		return
+	}
+
 	var processLog = TaskProcess{
 		Name: t.Name,
 		Pid:  t.process.Process.Pid,
@@ -310,14 +316,14 @@ func (t *Task) logTaskProcess() {
 	TaskProcesses.Tasks = append(TaskProcesses.Tasks, &processLog)
 	data, err := yaml.Marshal(&TaskProcesses)
 	if err != nil {
-		log.Println("Error marshalling task processes:", t.Name, err)
+		t.logger.Error(err)
 		return
 	}
 
 	if dir, err := os.Getwd(); err == nil {
 		var pidFile = filepath.Join(dir, PidFile)
 		if err = os.WriteFile(pidFile, data, 0644); err != nil {
-			log.Println("Error creating pidfile:", pidFile, err)
+			t.logger.Error(err)
 		}
 	}
 }
@@ -377,6 +383,7 @@ func (t *Task) runCommand() {
 		if spinner, ok := TaskSpinner.GetSpinner(t.Name); ok {
 			spinner.ErrorWithMessagef("Error starting command: %s", err)
 		}
+		utils.SharedAppLogger.Fatal(err)
 	}
 }
 
