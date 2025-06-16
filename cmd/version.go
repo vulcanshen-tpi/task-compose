@@ -15,7 +15,7 @@ var VersionCmd = &cobra.Command{
 		info["version"] = app.Version
 		info["build_date"] = app.BuildDate
 		info["commit_hash"] = app.CommitHash
-		info["execution_mode"] = app.ExecutionMode
+		info["portable"] = app.Portable
 		if jsonData, err := json.MarshalIndent(info, "", "  "); err == nil {
 			utils.SharedAppLogger.Info(string(jsonData))
 		} else {

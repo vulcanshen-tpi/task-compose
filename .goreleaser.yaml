@@ -34,7 +34,7 @@ builds:
       - -X {{.ModulePath}}/app.Version={{.Version}}
       - -X {{.ModulePath}}/app.CommitHash={{.ShortCommit}}
       - -X {{.ModulePath}}/app.BuildDate={{.CommitDate}}
-      - -X {{.ModulePath}}/app.ExecutionMode=CLI
+      - -X {{.ModulePath}}/app.Portable=false
     mod_timestamp: "{{ .CommitTimestamp }}"
   - id: "task-compose-portable-build"
     binary: "task-compose-portable"
@@ -57,7 +57,7 @@ builds:
       - -X {{.ModulePath}}/app.Version={{.Version}}
       - -X {{.ModulePath}}/app.CommitHash={{.ShortCommit}}
       - -X {{.ModulePath}}/app.BuildDate={{.CommitDate}}
-      - -X {{.ModulePath}}/app.ExecutionMode=GUI
+      - -X {{.ModulePath}}/app.Portable=true
     mod_timestamp: "{{ .CommitTimestamp }}"
 
 archives:

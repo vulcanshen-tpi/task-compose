@@ -115,7 +115,9 @@ fabric.properties
 test-env/
 logs/
 task-compose
+task-compose*.exe
 task-compose-portable
+task-compose-portable*.exe
 # Added by goreleaser init:
 dist/
 .tmp/
