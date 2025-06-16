@@ -24,7 +24,7 @@ func main() {
 			utils.SharedAppLogger.Fatal(err)
 		}
 
-	} else if app.Portable == "false" {
+	} else {
 		// cli mode
 		dir, err := os.Getwd()
 		if err != nil {
