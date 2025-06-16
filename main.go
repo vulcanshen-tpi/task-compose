@@ -9,13 +9,10 @@ import (
 	"github.com/vulcanshen-tpi/task-compose/utils"
 	"os"
 	"path/filepath"
-	"strconv"
-	"strings"
 )
 
 func main() {
 
-	utils.SharedAppLogger.Info("args:", strings.Join(os.Args, " "), "len:", strconv.Itoa(len(os.Args)))
 	if len(os.Args) == 1 && app.Portable == "true" {
 		utils.SharedAppLogger.Info("portable mode")
 		// gui mode (portable)
