@@ -26,7 +26,7 @@ var InitCmd = &cobra.Command{
 
 		if app.InitCmdIsWindows {
 			echoConfig = map[string]any{
-				"tasks": []map[string]any{ // map 的值也可以是另一個 map
+				"tasks": []map[string]any{
 					{
 						"name":       "echo",
 						"executable": "cmd.exe",
@@ -36,7 +36,7 @@ var InitCmd = &cobra.Command{
 			}
 		} else {
 			echoConfig = map[string]any{
-				"tasks": []map[string]any{ // map 的值也可以是另一個 map
+				"tasks": []map[string]any{
 					{
 						"name":       "echo",
 						"executable": "echo",
@@ -45,16 +45,6 @@ var InitCmd = &cobra.Command{
 				},
 			}
 		}
-
-		//minimalConfig := map[string]any{
-		//	"tasks": []map[string]any{ // map 的值也可以是另一個 map
-		//		{
-		//			"name":       "echo",
-		//			"executable": "echo",
-		//			"args":       []string{"hello", "world"},
-		//		},
-		//	},
-		//}
 
 		currentDir, err := os.Getwd()
 		if err != nil {
