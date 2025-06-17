@@ -22,24 +22,39 @@ var InitCmd = &cobra.Command{
 			utils.SharedAppLogger.Info(message)
 		}
 
-		//minimalConfig := config.LauncherConfig{
-		//	Tasks: []config.TaskConfig{
+		var echoConfig map[string]any
+
+		if app.InitCmdIsWindows {
+			echoConfig = map[string]any{
+				"tasks": []map[string]any{ // map 的值也可以是另一個 map
+					{
+						"name":       "echo",
+						"executable": "cmd.exe",
+						"args":       []string{"/C", "echo hello world"},
+					},
+				},
+			}
+		} else {
+			echoConfig = map[string]any{
+				"tasks": []map[string]any{ // map 的值也可以是另一個 map
+					{
+						"name":       "echo",
+						"executable": "echo",
+						"args":       []string{"hello", "world"},
+					},
+				},
+			}
+		}
+
+		//minimalConfig := map[string]any{
+		//	"tasks": []map[string]any{ // map 的值也可以是另一個 map
 		//		{
-		//			Name:       "echo",
-		//			Executable: "echo",
-		//			Args:       []string{"hello", "world"},
+		//			"name":       "echo",
+		//			"executable": "echo",
+		//			"args":       []string{"hello", "world"},
 		//		},
 		//	},
 		//}
-		minimalConfig := map[string]any{
-			"tasks": []map[string]any{ // map 的值也可以是另一個 map
-				{
-					"name":       "echo",
-					"executable": "echo",
-					"args":       []string{"hello", "world"},
-				},
-			},
-		}
 
 		currentDir, err := os.Getwd()
 		if err != nil {
@@ -48,8 +63,8 @@ var InitCmd = &cobra.Command{
 
 		var outputFile = config.GetDefaultFileNameWithExtension()
 
-		if app.OutputFileName != "" {
-			outputFile = app.OutputFileName
+		if app.InitCmdOutput != "" {
+			outputFile = app.InitCmdOutput
 		}
 
 		outputFile = filepath.Join(currentDir, outputFile)
@@ -63,7 +78,7 @@ var InitCmd = &cobra.Command{
 			utils.SharedAppLogger.Fatal(err)
 		}
 
-		yamlContent, err := yaml.Marshal(minimalConfig)
+		yamlContent, err := yaml.Marshal(echoConfig)
 		if err != nil {
 			utils.SharedAppLogger.Fatal(err)
 		}
@@ -77,5 +92,6 @@ var InitCmd = &cobra.Command{
 }
 
 func init() {
-	InitCmd.PersistentFlags().StringVarP(&app.OutputFileName, "output", "o", "", "Specify the generated configuration file name")
+	InitCmd.PersistentFlags().StringVarP(&app.InitCmdOutput, "output", "o", "", "Specify the generated configuration file name")
+	InitCmd.PersistentFlags().BoolVar(&app.InitCmdIsWindows, "win", false, "Use windows configuration")
 }

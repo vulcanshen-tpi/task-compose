@@ -5,5 +5,6 @@ var (
 	DetachMode       bool = false
 	DebugMode        bool
 	ShowDetail       bool
-	OutputFileName   string
+	InitCmdOutput    string
+	InitCmdIsWindows bool
 )

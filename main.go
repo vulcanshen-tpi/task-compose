@@ -15,7 +15,7 @@ func main() {
 
 	if len(os.Args) == 1 && app.Portable == "true" {
 		utils.SharedAppLogger.Info("portable mode")
-		// gui mode (portable)
+		// portable mode
 		path, err := os.Executable()
 		if err != nil {
 			utils.SharedAppLogger.Fatal(err)

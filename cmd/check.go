@@ -48,6 +48,7 @@ var CheckCmd = &cobra.Command{
 
 func init() {
 	CheckCmd.PersistentFlags().BoolVar(&app.ShowDetail, "detail", false, "Show configuration details")
+	CheckCmd.PersistentFlags().StringVarP(&app.TasksComposeFile, "configfile", "f", "", "Specify the path to the configuration file, default is 'task-compose.yaml'")
 }
 
 func CheckConfig() error {

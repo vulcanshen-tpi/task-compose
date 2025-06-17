@@ -6,7 +6,11 @@ import (
 	"github.com/vulcanshen-tpi/task-compose/config"
 	"github.com/vulcanshen-tpi/task-compose/procedure"
 	"github.com/vulcanshen-tpi/task-compose/utils"
+	"os"
+	"os/signal"
+	"runtime"
 	"sync"
+	"syscall"
 )
 
 var AppTasks map[string]*procedure.Task
@@ -52,6 +56,13 @@ var UpCmd = &cobra.Command{
 		}
 
 		waitGroup.Wait()
+
+		if len(os.Args) == 1 && app.Portable == "true" && runtime.GOOS == "windows" {
+			utils.SharedAppLogger.Info("Program completed, Press ctrl-c to exit.")
+			c := make(chan os.Signal, 1)
+			signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+			<-c
+		}
 	},
 }
 
