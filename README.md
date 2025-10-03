@@ -1,4 +1,16 @@
-# Task-Compose
+# ⚠️ Notice: Task-Compose Has Been Merged into [digiRocket](https://github.com/TPIsoftwareOSPO/digiRocket?tab=readme-ov-file)
+
+The task-compose project, as a standalone utility, is no longer being actively updated or maintained. All future feature development, bug fixes, and documentation updates will occur solely within the digiRocket project.
+
+The core functionality of task-compose is now the Task Orchestration Engine at the heart of [digiRocket](https://github.com/TPIsoftwareOSPO/digiRocket?tab=readme-ov-file), built upon its robust foundation of Go and Cobra.
+
+Task Orchestration Engine Overview
+The logic of task-compose (now a core feature of [digiRocket](https://github.com/TPIsoftwareOSPO/digiRocket?tab=readme-ov-file)) is a convenient command-line utility designed to orchestrate and execute a series of commands based on a declarative YAML configuration file, similar to how container orchestrators manage services. This tool simplifies the management of complex multi-command setups, making it ideal for local development environments, testing suites, or task automation.
+
+Using this engine, you define your tasks, their execution parameters, and their dependencies, allowing you to bring up and manage an entire set of related processes with a single command. It includes robust health check capabilities, ensuring that each task is healthy before dependent tasks are started.
+
+
+# ~Task-Compose (No Longer Maintained Independently)~
 
 `task-compose` is a convenient command-line utility built with Go and Cobra. It's designed to orchestrate and execute a series of commands based on a declarative YAML configuration file, similar to how container orchestrators manage services. This tool simplifies the management of complex multi-command setups, making it ideal for local development environments, testing suites, or task automation.
 
